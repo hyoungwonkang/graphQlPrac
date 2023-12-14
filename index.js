@@ -2,14 +2,19 @@ const { createClient } = require("@supabase/supabase-js");
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
 
-const supabaseUrl = "";
-const supabaseKey = "";
+const supabaseUrl = "https://qgtftoooyicbxovvmquq.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFndGZ0b29veWljYnhvdnZtcXVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDI0NjY5MDEsImV4cCI6MjAxODA0MjkwMX0.k1mxCrC86qrlG7f2L7M95iAW87pOBDIhsb1s0Y6_SqM";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const typeDefs = `#graphql
   type Member {
+    id: Int
     no: String
     name: String
+  }
+  type Query {
+    members: [Member]
+    member(no: String): Member
   }
 `;
 
@@ -17,12 +22,12 @@ const typeDefs = `#graphql
 const resolvers = {
   Query: {
     members: async () => {
-      let { data: members, error } = await supabase.from("member").select("*");
+      let { data: members, error } = await supabase.from("members").select("*");
       return members;
     },
     member: async (_, { no }) => {
       let { data: members, error } = await supabase
-        .from("member")
+        .from("members")
         .select("*")
         .eq("no", no);
       return members[0];
