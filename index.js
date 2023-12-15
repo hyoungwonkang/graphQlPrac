@@ -11,6 +11,26 @@ const typeDefs = `#graphql
     id: Int
     no: String
     name: String
+    role: Role
+    jobTitle: JobTitle
+
+    role_id: Int # 직군(FK)
+    profile_img: String # 프로필 이미지 URL
+    gender: String # 성별(M/F/X)
+    birthday: String # 생일
+    job_start_year: String # 연차
+    joined_year: String # 근속년수
+    
+    job_title_id: Int # 직책(FK)
+    # 부서는 일단 제외(복잡해짐)
+  }
+  type Role {
+    id: Int # PK
+    name: String # 직군(이름)
+  }
+  type JobTitle {
+    id: Int # PK
+    name: String # 직책(이름)
   }
   type Query {
     members: [Member]
@@ -33,6 +53,16 @@ const resolvers = {
       return members[0];
     },
   },
+  Member: {
+    role: async ({ role_id }) => {
+      let {data: roles, error} = await supabase.from("roles").select("*").eq("id", role_id);
+      return roles[0];
+    },
+    jobTitle: async ({ job_title_id }) => {
+      let {data: jobTitles, error} = await supabase.from("jobTitles").select("*").eq("id", job_title_id);
+      return jobTitles[0];
+    }
+  },
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
@@ -46,5 +76,4 @@ const server = new ApolloServer({ typeDefs, resolvers });
   } catch (e) {
     console.log(e);
   }
-  // `text` is not available here
 })();
